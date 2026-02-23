@@ -46,6 +46,19 @@ function deleteGoal(id) {
     location.reload();
 }
 
+function formatDisplayDate(dateStr) {
+    const date = new Date(dateStr);
+
+    const options = {
+        day: "2-digit",
+        month: "short",
+        year: "numeric"
+    };
+
+    return date.toLocaleDateString("en-GB", options);
+}
+
+
 // Mark today's goal as complete and play feedback sound
 function markComplete(id) {
     const goal = data.goals.find(g => g.id === id);
@@ -115,7 +128,7 @@ function renderGoals() {
         // Populate goal card content
         card.innerHTML = `
         <h3>${goal.name}</h3>
-        <p>📅 Started: ${goal.startDate}</p>        
+        <p>🕒 Started: ${formatDisplayDate(goal.startDate)}</p>        
         <p>🔥 ${streak} Day Streak</p>
         <p>🏆 Best: ${goal.bestStreak}</p>
         <button 
@@ -233,6 +246,7 @@ function renderManage() {
 // Initial render calls when page loads
 renderGoals();
 renderManage();
+
 
 
 
