@@ -20,6 +20,10 @@ body {
 header {
     margin-bottom: 1rem;
 }
+header .centerText {
+    text-align: center;
+}
+
 
 /* ---------- Button styling ---------- */
 /* Makes buttons full width with padding and rounded corners */
@@ -98,6 +102,7 @@ button:disabled {
     width: 100%;
     box-sizing: border-box;
 }
+
 
 
 
