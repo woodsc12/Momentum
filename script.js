@@ -1,17 +1,40 @@
-// Get today's date in YYYY-MM-DD format for history tracking
-const today = new Date().toISOString().split('T')[0];
+```javascript
+// ================================
+// Momentum Tracker - Updated Script
+// Features:
+// ✅ Dynamic date handling (avoids midnight bugs)
+// ✅ Correct calendar chain filling logic
+// ✅ Safe date formatting (DD-MMM-YYYY)
+// ✅ Progress bar responds to start date + history
+// ✅ Sound feedback on completion
+// ================================
 
-// Load saved momentum data from localStorage or initialize default structure
+
+// ---------- Date Helper ----------
+
+// Returns today's date in YYYY-MM-DD format dynamically
+function getToday() {
+    return new Date().toISOString().split('T')[0];
+}
+
+
+// ---------- Data Storage ----------
+
+// Load saved momentum data or initialize structure
 let data = JSON.parse(localStorage.getItem("momentumData")) || {
     goals: []
 };
 
-// Save current data state into localStorage
+
+// Save current application state to localStorage
 function saveData() {
     localStorage.setItem("momentumData", JSON.stringify(data));
 }
 
-// Add a new goal to the goals list and refresh page
+
+// ---------- Goal Creation ----------
+
+// Add a new goal with validation
 function addGoal() {
     const name = document.getElementById("goalName").value;
     const color = document.getElementById("goalColor").value;
@@ -19,18 +42,19 @@ function addGoal() {
 
     if (!name || !startDate) return;
 
-    // Prevent users from selecting a future start date
-    const todayStr = new Date().toISOString().split('T')[0];
+    // Prevent future start dates
+    const todayStr = getToday();
     if (startDate > todayStr) {
         alert("Start date cannot be in the future.");
         return;
     }
-    
+
+    // Initialize goal object
     data.goals.push({
         id: Date.now(),
         name,
         color,
-        startDate,   // New field
+        startDate,
         history: {},
         bestStreak: 0
     });
@@ -39,42 +63,54 @@ function addGoal() {
     location.reload();
 }
 
-// Remove a goal by filtering it out of the goals array
+
+// ---------- Goal Deletion ----------
+
+// Delete goal by filtering array
 function deleteGoal(id) {
     data.goals = data.goals.filter(g => g.id !== id);
     saveData();
     location.reload();
 }
 
-function formatDisplayDate(dateStr) {
-    const date = new Date(dateStr);
 
-    const options = {
+// ---------- Date Formatting ----------
+
+// Format dates as DD-MMM-YYYY
+function formatDisplayDate(dateStr) {
+    if (!dateStr) return "";
+
+    const date = new Date(dateStr + "T00:00:00");
+
+    return date.toLocaleDateString("en-GB", {
         day: "2-digit",
         month: "short",
         year: "numeric"
-    };
-
-    return date.toLocaleDateString("en-GB", options);
+    });
 }
 
 
-// Mark today's goal as complete and play feedback sound
+// ---------- Completion Logic ----------
+
+// Mark goal as complete for today
 function markComplete(id) {
     const goal = data.goals.find(g => g.id === id);
-    
-    // Record completion for today
-    goal.history[today] = true; 
 
-    // Play confirmation sound
-    playFlameSound(); 
+    const today = getToday();
+
+    // Record completion history
+    goal.history[today] = true;
+
+    playFlameSound();
 
     saveData();
-    renderGoals(); // Refresh UI display
+    renderGoals();
 }
 
-// Calculate current streak by walking backward through dates
-// Stops after encountering more than one missed day
+
+// ---------- Streak Calculation ----------
+
+// Calculate streak by walking backward day-by-day
 function calculateStreak(goal) {
     let streak = 0;
     let missedOnce = false;
@@ -96,7 +132,7 @@ function calculateStreak(goal) {
         date.setDate(date.getDate() - 1);
     }
 
-    // Update best streak if current streak is higher
+    // Update best streak
     if (streak > goal.bestStreak) {
         goal.bestStreak = streak;
         saveData();
@@ -105,53 +141,66 @@ function calculateStreak(goal) {
     return streak;
 }
 
-// Render all goals inside the UI container
+
+// ---------- Rendering ----------
+
+// Render all goals in main container
 function renderGoals() {
     const container = document.getElementById("goalsContainer");
     if (!container) return;
 
     container.innerHTML = "";
+
     let completedToday = 0;
+
+    const today = new Date(getToday());
 
     data.goals.forEach(goal => {
 
         const streak = calculateStreak(goal);
-        const isDone = goal.history[today];
+        const isDone = goal.history[getToday()];
 
         if (isDone) completedToday++;
 
-        // Create goal card UI element
         const card = document.createElement("div");
         card.className = "goalCard";
         card.style.border = `2px solid ${goal.color}`;
 
-        // Populate goal card content
         card.innerHTML = `
-        <h3>${goal.name}</h3>
-        <p>🕒 Started: ${formatDisplayDate(goal.startDate)}</p>        
-        <p>🔥 ${streak} Day Streak</p>
-        <p>🏆 Best: ${goal.bestStreak}</p>
-        <button 
-            onclick="markComplete(${goal.id})"
-            ${isDone ? "disabled" : ""}
-        >
-            ${isDone ? "✔ Completed" : "Mark Complete"}
-        </button>
-        <div class="chainBar">${generateChain(goal)}</div>
-    `;
+            <h3>${goal.name}</h3>
+            <p>🕒 Started: ${formatDisplayDate(goal.startDate)}</p>
+            <p>🔥 ${streak} Day Streak</p>
+            <p>🏆 Best: ${goal.bestStreak}</p>
+
+            <button 
+                onclick="markComplete(${goal.id})"
+                ${isDone ? "disabled" : ""}
+            >
+                ${isDone ? "✔ Completed" : "Mark Complete"}
+            </button>
+
+            <div class="chainBar">${generateChain(goal)}</div>
+        `;
 
         container.appendChild(card);
     });
 
-    // Display total number of goals completed today
-    document.getElementById("dailyScore").innerText =
-        `🔥 ${completedToday} / ${data.goals.length} Completed Today`;
+    // Update daily completion score
+    const scoreElement = document.getElementById("dailyScore");
+    if (scoreElement) {
+        scoreElement.innerText =
+            `🔥 ${completedToday} / ${data.goals.length} Completed Today`;
+    }
 }
 
-// Audio context for flame completion sound
+
+// ---------- Audio Feedback ----------
+
+// Audio context (lazy initialized)
 let audioCtx;
 
-// Generate short flame-like sound effect when goal is completed
+
+// Play flame-like confirmation sound
 function playFlameSound() {
     if (!audioCtx) {
         audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -177,19 +226,20 @@ function playFlameSound() {
     oscillator.stop(now + 0.25);
 }
 
-// Generate 30-day progress chain bar (fills left → right based on streak)
+
+// ---------- Progress Chain Rendering ----------
+
+// Generate calendar progress chain bar
 function generateChain(goal) {
+
     let html = "";
 
     if (!goal.startDate) return "";
 
-    const startDate = new Date(goal.startDate);
-    const todayDate = new Date(today);
+    const startDate = new Date(goal.startDate + "T00:00:00");
+    const todayDate = new Date(getToday());
 
-    // Get first day of current month
-    const monthStart = new Date(todayDate.getFullYear(), todayDate.getMonth(), 1);
-
-    // Get number of days in current month
+    // Number of days in current month
     const monthDays = new Date(
         todayDate.getFullYear(),
         todayDate.getMonth() + 1,
@@ -206,13 +256,13 @@ function generateChain(goal) {
 
         const chainDateStr = chainDate.toISOString().split('T')[0];
 
-        // Fill only if:
+        // Fill box only if:
         // 1. After start date
         // 2. Before or equal today
         // 3. History shows completion
         const isFilled =
-            chainDate >= startDate &&
-            chainDate <= todayDate &&
+            chainDate.getTime() >= startDate.getTime() &&
+            chainDate.getTime() <= todayDate.getTime() &&
             goal.history[chainDateStr];
 
         html += `
@@ -225,27 +275,35 @@ function generateChain(goal) {
     return html;
 }
 
-// Render goal management list with delete buttons
+
+// ---------- Goal Management List ----------
+
+// Render manage page goal list
 function renderManage() {
     const list = document.getElementById("goalList");
     if (!list) return;
 
     list.innerHTML = "";
 
-    // Show each goal with a delete option
     data.goals.forEach(goal => {
         const li = document.createElement("li");
+
         li.innerHTML = `
             ${goal.name}
             <button onclick="deleteGoal(${goal.id})">Delete</button>
         `;
+
         list.appendChild(li);
     });
 }
 
-// Initial render calls when page loads
+
+// ---------- Initial Render ----------
+
+// Run UI rendering when page loads
 renderGoals();
 renderManage();
+```
 
 
 
