@@ -19,11 +19,8 @@ body {
 /* Centers header text and adds spacing below */
 header {
     margin-bottom: 1rem;
+    text-align: center; 
 }
-header .centerText {
-    text-align: center;
-}
-
 
 /* ---------- Button styling ---------- */
 /* Makes buttons full width with padding and rounded corners */
@@ -82,29 +79,4 @@ button:disabled {
     margin: 0 auto;
     padding: 20px;
 }
-
-/* Manage goals heading alignment */
-#manageTitle {
-    text-align: left;
-    margin-bottom: 14px;
-}
-
-/* Removes default list formatting */
-#goalList {
-    list-style: none;
-    padding: 0;
-    margin-top: 16px;
-}
-
-/* Ensures cards use full container width */
-.goalCard,
-#goalList li {
-    width: 100%;
-    box-sizing: border-box;
-}
-
-
-
-
-
 
