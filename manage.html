@@ -1,23 +1,42 @@
+<!-- Defines document type and tells the browser this is an HTML5 page -->
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Manage Goals</title>
-<link rel="stylesheet" href="style.css">
+    <!-- Character encoding for proper text display -->
+    <meta charset="UTF-8">
+
+    <!-- Makes page responsive on mobile devices -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Page title shown in browser tab -->
+    <title>Manage Goals</title>
+
+    <!-- External stylesheet for page styling -->
+    <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 
+<!-- Page heading -->
 <h2>Manage Goals</h2>
 
+<!-- Input section for creating a new goal -->
 <input type="text" id="goalName" placeholder="New Goal">
 <input type="color" id="goalColor">
+<input type="date" id="goalStartDate">
+
+<!-- Button triggers JavaScript function to add a goal -->
 <button onclick="addGoal()">Add Goal</button>
 
+<!-- List container where goals will be displayed -->
 <ul id="goalList"></ul>
 
+<!-- Navigation link to return to main page -->
 <a href="index.html">Back</a>
 
+<!-- External JavaScript file that handles goal management logic -->
 <script src="script.js"></script>
+
 </body>
 </html>
