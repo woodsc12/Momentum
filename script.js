@@ -1,4 +1,3 @@
-```javascript
 // ================================
 // Momentum Tracker - Updated Script
 // Features:
@@ -295,10 +294,5 @@ function renderManage() {
 // Run UI rendering when page loads
 renderGoals();
 renderManage();
-```
-
-
-
-
 
 
