@@ -17,6 +17,10 @@ function getToday() {
     return new Date().toISOString().split('T')[0];
 }
 
+// ---------- Helper ---------------
+function normalizeDate(str) {
+    return new Date(str + "T00:00:00");
+}
 
 // ---------- Data Storage ----------
 
@@ -236,13 +240,12 @@ function generateChain(goal) {
 
     if (!goal.startDate) return "";
 
-    const startDate = new Date(goal.startDate + "T00:00:00");
-    const todayDate = new Date(getToday());
+    const startDate = normalizeDate(goal.startDate);
+    const todayDate = normalizeDate(getToday());
 
     const year = todayDate.getFullYear();
     const month = todayDate.getMonth();
 
-    // Number of days in current month
     const monthDays = new Date(year, month + 1, 0).getDate();
 
     for (let day = 1; day <= monthDays; day++) {
@@ -250,18 +253,14 @@ function generateChain(goal) {
         const chainDate = new Date(year, month, day);
         const chainDateStr = chainDate.toISOString().split('T')[0];
 
-        // Box should be eligible only if:
-        // 1. Day is after startDate OR equal
-        // 2. Day is not in future
-        // 3. History shows completion
         const isFilled =
             chainDate >= startDate &&
             chainDate <= todayDate &&
-            goal.history[chainDateStr] === true;
+            goal.history?.[chainDateStr];
 
         html += `
             <div class="chainDay ${isFilled ? "done" : ""}"
-                 title="${chainDateStr}">
+                 title="${formatDisplayDate(chainDateStr)}">
             </div>
         `;
     }
@@ -280,7 +279,6 @@ function renderManage() {
     list.innerHTML = "";
 
     data.goals.forEach(goal => {
-        const li = document.createElement("li");
 
         li.innerHTML = `
             ${goal.name}
@@ -298,6 +296,7 @@ function renderManage() {
 renderGoals();
 renderManage();
 ```
+
 
 
 
