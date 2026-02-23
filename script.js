@@ -239,31 +239,25 @@ function generateChain(goal) {
     const startDate = new Date(goal.startDate + "T00:00:00");
     const todayDate = new Date(getToday());
 
+    const year = todayDate.getFullYear();
+    const month = todayDate.getMonth();
+
     // Number of days in current month
-    const monthDays = new Date(
-        todayDate.getFullYear(),
-        todayDate.getMonth() + 1,
-        0
-    ).getDate();
+    const monthDays = new Date(year, month + 1, 0).getDate();
 
     for (let day = 1; day <= monthDays; day++) {
 
-        const chainDate = new Date(
-            todayDate.getFullYear(),
-            todayDate.getMonth(),
-            day
-        );
-
+        const chainDate = new Date(year, month, day);
         const chainDateStr = chainDate.toISOString().split('T')[0];
 
-        // Fill box only if:
-        // 1. After start date
-        // 2. Before or equal today
+        // Box should be eligible only if:
+        // 1. Day is after startDate OR equal
+        // 2. Day is not in future
         // 3. History shows completion
         const isFilled =
-            chainDate.getTime() >= startDate.getTime() &&
-            chainDate.getTime() <= todayDate.getTime() &&
-            goal.history[chainDateStr];
+            chainDate >= startDate &&
+            chainDate <= todayDate &&
+            goal.history[chainDateStr] === true;
 
         html += `
             <div class="chainDay ${isFilled ? "done" : ""}"
@@ -304,6 +298,7 @@ function renderManage() {
 renderGoals();
 renderManage();
 ```
+
 
 
 
