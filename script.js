@@ -15,14 +15,24 @@ function saveData() {
 function addGoal() {
     const name = document.getElementById("goalName").value;
     const color = document.getElementById("goalColor").value;
-    if (!name) return;
+    const startDate = document.getElementById("goalStartDate").value;
 
+    if (!name || !startDate) return;
+
+    // Prevent users from selecting a future start date
+    const todayStr = new Date().toISOString().split('T')[0];
+    if (startDate > todayStr) {
+        alert("Start date cannot be in the future.");
+        return;
+    }
+    
     data.goals.push({
         id: Date.now(),
         name,
         color,
-        history: {},      // Stores completion dates
-        bestStreak: 0     // Tracks longest streak achieved
+        startDate,   // New field
+        history: {},
+        bestStreak: 0
     });
 
     saveData();
@@ -102,6 +112,7 @@ function renderGoals() {
         // Populate goal card content
         card.innerHTML = `
         <h3>${goal.name}</h3>
+        <p>📅 Started: ${goal.startDate}</p>        
         <p>🔥 ${streak} Day Streak</p>
         <p>🏆 Best: ${goal.bestStreak}</p>
         <button 
@@ -153,15 +164,32 @@ function playFlameSound() {
 // Generate 30-day progress chain bar (fills left → right based on streak)
 function generateChain(goal) {
     let html = "";
-    const streak = calculateStreak(goal);
 
-    // Build chain boxes from left to right
-    for (let i = 0; i < 30; i++) {
-        if (i < streak) {
-            html += `<div class="chainDay done"></div>`;
-        } else {
-            html += `<div class="chainDay"></div>`;
-        }
+    if (!goal.startDate) {
+        return "";
+    }
+
+    const start = new Date(goal.startDate);
+    const todayDate = new Date(today);
+
+    for (let day = 1; day <= 30; day++) {
+
+        const chainDate = new Date(start);
+        chainDate.setDate(start.getDate() + (day - 1));
+
+        const chainDateStr = chainDate.toISOString().split('T')[0];
+
+        const isFilled =
+            chainDate <= todayDate &&
+            goal.history[chainDateStr];
+
+        // Tooltip shows real calendar date
+        html += `
+            <div 
+                class="chainDay ${isFilled ? "done" : ""}"
+                title="${chainDateStr}"
+            ></div>
+        `;
     }
 
     return html;
@@ -188,4 +216,5 @@ function renderManage() {
 // Initial render calls when page loads
 renderGoals();
 renderManage();
+
 
