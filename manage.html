@@ -18,25 +18,27 @@
 
 <body>
 
-<!-- Page heading -->
-<h2>Manage Goals</h2>
+<div class="manageContainer">
 
-<!-- Input section for creating a new goal -->
-<input type="text" id="goalName" placeholder="New Goal">
-<input type="color" id="goalColor">
-<input type="date" id="goalStartDate">
+    <h2 id="manageTitle">Manage Goals</h2>
 
-<!-- Button triggers JavaScript function to add a goal -->
-<button onclick="addGoal()">Add Goal</button>
+    <!-- Input section -->
+    <input type="text" id="goalName" placeholder="New Goal">
+    <input type="color" id="goalColor">
+    <input type="date" id="goalStartDate">
 
-<!-- List container where goals will be displayed -->
-<ul id="goalList"></ul>
+    <br><br>
 
-<!-- Navigation link to return to main page -->
-<a href="index.html">Back</a>
+    <button onclick="addGoal()">Add Goal</button>
 
-<!-- External JavaScript file that handles goal management logic -->
+    <ul id="goalList"></ul>
+
+    <a href="index.html">Back</a>
+
+</div>
+
 <script src="script.js"></script>
 
 </body>
 </html>
+
