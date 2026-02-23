@@ -1,3 +1,5 @@
+/* ---------- Global page styling ---------- */
+/* Sets default font, removes default margins, and applies dark theme colors */
 body {
     font-family: Arial, sans-serif;
     margin: 0;
@@ -6,16 +8,22 @@ body {
     color: #fff;
 }
 
+/* ---------- Light mode theme override ---------- */
+/* Switches background and text color when .light class is applied */
 .light {
     background: #fff;
     color: #111;
 }
 
+/* ---------- Header styling ---------- */
+/* Centers header text and adds spacing below */
 header {
     text-align: center;
     margin-bottom: 1rem;
 }
 
+/* ---------- Button styling ---------- */
+/* Makes buttons full width with padding and rounded corners */
 button {
     padding: 10px;
     margin: 5px 0;
@@ -25,30 +33,41 @@ button {
     font-weight: bold;
 }
 
+/* ---------- Disabled button state ---------- */
+/* Reduces visibility and prevents interaction */
 button:disabled {
     opacity: 0.6;
     cursor: not-allowed;
 }
 
+/* ---------- Goal card container ---------- */
+/* Defines spacing, padding, and rounded edges for goal display cards */
 .goalCard {
     padding: 15px;
     border-radius: 12px;
     margin-bottom: 15px;
 }
 
+/* ---------- Chain progress bar container ---------- */
+/* Uses flex layout to display chain days horizontally */
 .chainBar {
     display: flex;
     gap: 2px;
     margin-top: 8px;
 }
 
+/* ---------- Individual chain day block ---------- */
+/* Small square indicators representing progress history */
 .chainDay {
     width: 8px;
+    transition: all 0.25s ease;
     height: 8px;
     border-radius: 2px;
     background: gray;
 }
 
+/* ---------- Completed chain day state ---------- */
+/* Changes color when a day is marked as completed */
 .chainDay.done {
     background: limegreen;
 }
