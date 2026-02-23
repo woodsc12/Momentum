@@ -1,14 +1,18 @@
+// Get today's date in YYYY-MM-DD format for history tracking
 const today = new Date().toISOString().split('T')[0];
 
+// Load saved momentum data from localStorage or initialize default structure
 let data = JSON.parse(localStorage.getItem("momentumData")) || {
     goals: [],
     theme: "dark"
 };
 
+// Save current data state into localStorage
 function saveData() {
     localStorage.setItem("momentumData", JSON.stringify(data));
 }
 
+// Toggle between dark and light theme and update UI class
 function toggleTheme() {
     if (data.theme === "dark") {
         document.body.classList.add("light");
@@ -20,8 +24,10 @@ function toggleTheme() {
     saveData();
 }
 
+// Apply saved theme preference when page loads
 if (data.theme === "light") document.body.classList.add("light");
 
+// Add a new goal to the goals list and refresh page
 function addGoal() {
     const name = document.getElementById("goalName").value;
     const color = document.getElementById("goalColor").value;
@@ -31,30 +37,34 @@ function addGoal() {
         id: Date.now(),
         name,
         color,
-        history: {},
-        bestStreak: 0
+        history: {},      // Stores completion dates
+        bestStreak: 0     // Tracks longest streak achieved
     });
 
     saveData();
     location.reload();
 }
 
+// Remove a goal by filtering it out of the goals array
 function deleteGoal(id) {
     data.goals = data.goals.filter(g => g.id !== id);
     saveData();
     location.reload();
 }
 
+// Mark today's goal as complete and play feedback sound
 function markComplete(id) {
     const goal = data.goals.find(g => g.id === id);
-    goal.history[today] = true;
+    goal.history[today] = true; // Record completion for today
 
-    playFlameSound();
+    playFlameSound(); // Play confirmation sound
 
     saveData();
-    renderGoals();
+    renderGoals(); // Refresh UI display
 }
 
+// Calculate current streak by walking backward through dates
+// Stops after encountering more than one missed day
 function calculateStreak(goal) {
     let streak = 0;
     let missedOnce = false;
@@ -62,6 +72,7 @@ function calculateStreak(goal) {
 
     while (true) {
         const dateStr = date.toISOString().split('T')[0];
+
         if (goal.history[dateStr]) {
             streak++;
         } else {
@@ -71,9 +82,11 @@ function calculateStreak(goal) {
                 break;
             }
         }
+
         date.setDate(date.getDate() - 1);
     }
 
+    // Update best streak if current streak is higher
     if (streak > goal.bestStreak) {
         goal.bestStreak = streak;
         saveData();
@@ -82,6 +95,7 @@ function calculateStreak(goal) {
     return streak;
 }
 
+// Render all goals inside the UI container
 function renderGoals() {
     const container = document.getElementById("goalsContainer");
     if (!container) return;
@@ -90,16 +104,19 @@ function renderGoals() {
     let completedToday = 0;
 
     data.goals.forEach(goal => {
-    const streak = calculateStreak(goal);
-    const isDone = goal.history[today];
 
-    if (isDone) completedToday++;
+        const streak = calculateStreak(goal);
+        const isDone = goal.history[today];
 
-    const card = document.createElement("div");
-    card.className = "goalCard";
-    card.style.border = `2px solid ${goal.color}`;
+        if (isDone) completedToday++;
 
-    card.innerHTML = `
+        // Create goal card UI element
+        const card = document.createElement("div");
+        card.className = "goalCard";
+        card.style.border = `2px solid ${goal.color}`;
+
+        // Populate goal card content
+        card.innerHTML = `
         <h3>${goal.name}</h3>
         <p>🔥 ${streak} Day Streak</p>
         <p>🏆 Best: ${goal.bestStreak}</p>
@@ -112,15 +129,18 @@ function renderGoals() {
         <div class="chainBar">${generateChain(goal)}</div>
     `;
 
-    container.appendChild(card);
-});
+        container.appendChild(card);
+    });
 
+    // Display total number of goals completed today
     document.getElementById("dailyScore").innerText =
         `🔥 ${completedToday} / ${data.goals.length} Completed Today`;
 }
 
+// Audio context for flame completion sound
 let audioCtx;
 
+// Generate short flame-like sound effect when goal is completed
 function playFlameSound() {
     if (!audioCtx) {
         audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -146,11 +166,13 @@ function playFlameSound() {
     oscillator.stop(now + 0.25);
 }
 
+// Generate 30-day progress chain bar (fills left → right based on streak)
 function generateChain(goal) {
     let html = "";
     const streak = calculateStreak(goal);
 
-    for (let i = 29; i >= 0; i--) {
+    // Build chain boxes from left to right
+    for (let i = 0; i < 30; i++) {
         if (i < streak) {
             html += `<div class="chainDay done"></div>`;
         } else {
@@ -161,12 +183,14 @@ function generateChain(goal) {
     return html;
 }
 
+// Render goal management list with delete buttons
 function renderManage() {
     const list = document.getElementById("goalList");
     if (!list) return;
 
     list.innerHTML = "";
 
+    // Show each goal with a delete option
     data.goals.forEach(goal => {
         const li = document.createElement("li");
         li.innerHTML = `
@@ -177,7 +201,6 @@ function renderManage() {
     });
 }
 
+// Initial render calls when page loads
 renderGoals();
-
 renderManage();
-
