@@ -79,6 +79,11 @@ function addGoal() {
     
     data.goals.push(goal);
 
+    saveData();
+
+    renderGoals();
+    renderManage();
+}
 
 // ---------- Goal Deletion ----------
 
@@ -309,6 +314,7 @@ function renderManage() {
 // Run UI rendering when page loads
 renderGoals();
 renderManage();
+
 
 
 
