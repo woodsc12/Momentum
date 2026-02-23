@@ -63,7 +63,9 @@ function addGoal() {
     });
 
     saveData();
-    location.reload();
+    
+    renderGoals();
+    renderManage();
 }
 
 
@@ -279,6 +281,8 @@ function renderManage() {
 
     data.goals.forEach(goal => {
 
+        const li = document.createElement("li"); // <-- Missing line fixed
+
         li.innerHTML = `
             ${goal.name}
             <button onclick="deleteGoal(${goal.id})">Delete</button>
@@ -294,5 +298,6 @@ function renderManage() {
 // Run UI rendering when page loads
 renderGoals();
 renderManage();
+
 
 
