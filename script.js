@@ -3,29 +3,13 @@ const today = new Date().toISOString().split('T')[0];
 
 // Load saved momentum data from localStorage or initialize default structure
 let data = JSON.parse(localStorage.getItem("momentumData")) || {
-    goals: [],
-    theme: "dark"
+    goals: []
 };
 
 // Save current data state into localStorage
 function saveData() {
     localStorage.setItem("momentumData", JSON.stringify(data));
 }
-
-// Toggle between dark and light theme and update UI class
-function toggleTheme() {
-    if (data.theme === "dark") {
-        document.body.classList.add("light");
-        data.theme = "light";
-    } else {
-        document.body.classList.remove("light");
-        data.theme = "dark";
-    }
-    saveData();
-}
-
-// Apply saved theme preference when page loads
-if (data.theme === "light") document.body.classList.add("light");
 
 // Add a new goal to the goals list and refresh page
 function addGoal() {
@@ -204,3 +188,4 @@ function renderManage() {
 // Initial render calls when page loads
 renderGoals();
 renderManage();
+
