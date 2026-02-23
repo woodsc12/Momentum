@@ -1,0 +1,54 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 1rem;
+    background: #111;
+    color: #fff;
+}
+
+.light {
+    background: #fff;
+    color: #111;
+}
+
+header {
+    text-align: center;
+    margin-bottom: 1rem;
+}
+
+button {
+    padding: 10px;
+    margin: 5px 0;
+    width: 100%;
+    border: none;
+    border-radius: 8px;
+    font-weight: bold;
+}
+
+button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.goalCard {
+    padding: 15px;
+    border-radius: 12px;
+    margin-bottom: 15px;
+}
+
+.chainBar {
+    display: flex;
+    gap: 2px;
+    margin-top: 8px;
+}
+
+.chainDay {
+    width: 8px;
+    height: 8px;
+    border-radius: 2px;
+    background: gray;
+}
+
+.chainDay.done {
+    background: limegreen;
+}
