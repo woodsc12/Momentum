@@ -49,9 +49,12 @@ function deleteGoal(id) {
 // Mark today's goal as complete and play feedback sound
 function markComplete(id) {
     const goal = data.goals.find(g => g.id === id);
-    goal.history[today] = true; // Record completion for today
+    
+    // Record completion for today
+    goal.history[today] = true; 
 
-    playFlameSound(); // Play confirmation sound
+    // Play confirmation sound
+    playFlameSound(); 
 
     saveData();
     renderGoals(); // Refresh UI display
@@ -165,30 +168,44 @@ function playFlameSound() {
 function generateChain(goal) {
     let html = "";
 
-    if (!goal.startDate) {
-        return "";
-    }
+    if (!goal.startDate) return "";
 
-    const start = new Date(goal.startDate);
+    const startDate = new Date(goal.startDate);
     const todayDate = new Date(today);
 
-    for (let day = 1; day <= 30; day++) {
+    // Get first day of current month
+    const monthStart = new Date(todayDate.getFullYear(), todayDate.getMonth(), 1);
 
-        const chainDate = new Date(start);
-        chainDate.setDate(start.getDate() + (day - 1));
+    // Get number of days in current month
+    const monthDays = new Date(
+        todayDate.getFullYear(),
+        todayDate.getMonth() + 1,
+        0
+    ).getDate();
+
+    for (let day = 1; day <= monthDays; day++) {
+
+        const chainDate = new Date(
+            todayDate.getFullYear(),
+            todayDate.getMonth(),
+            day
+        );
 
         const chainDateStr = chainDate.toISOString().split('T')[0];
 
+        // Fill only if:
+        // 1. After start date
+        // 2. Before or equal today
+        // 3. History shows completion
         const isFilled =
+            chainDate >= startDate &&
             chainDate <= todayDate &&
             goal.history[chainDateStr];
 
-        // Tooltip shows real calendar date
         html += `
-            <div 
-                class="chainDay ${isFilled ? "done" : ""}"
-                title="${chainDateStr}"
-            ></div>
+            <div class="chainDay ${isFilled ? "done" : ""}"
+                 title="${chainDateStr}">
+            </div>
         `;
     }
 
@@ -216,5 +233,6 @@ function renderManage() {
 // Initial render calls when page loads
 renderGoals();
 renderManage();
+
 
 
