@@ -212,7 +212,7 @@ function renderGoals() {
     const scoreElement = document.getElementById("dailyScore");
     if (scoreElement) {
         scoreElement.innerText =
-            `🔥 ${completedToday} / ${data.goals.length} Completed Today`;
+            `⚡ ${completedToday} / ${data.goals.length} Completed Today`;
     }
 }
 
@@ -316,6 +316,7 @@ function renderManage() {
 // Run UI rendering when page loads
 renderGoals();
 renderManage();
+
 
 
 
