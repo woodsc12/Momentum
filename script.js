@@ -148,14 +148,22 @@ function playFlameSound() {
 
 function generateChain(goal) {
     let html = "";
+    const days = [];
+
+    // Build array oldest → newest
     for (let i = 29; i >= 0; i--) {
         const date = new Date();
         date.setDate(date.getDate() - i);
         const dateStr = date.toISOString().split('T')[0];
-        const done = goal.history[dateStr];
-
-        html += `<div class="chainDay ${done ? 'done' : ''}"></div>`;
+        days.push(dateStr);
     }
+
+    // Render in natural order (left to right)
+    days.forEach(dateStr => {
+        const done = goal.history[dateStr];
+        html += `<div class="chainDay ${done ? 'done' : ''}"></div>`;
+    });
+
     return html;
 }
 
@@ -176,4 +184,5 @@ function renderManage() {
 }
 
 renderGoals();
+
 renderManage();
