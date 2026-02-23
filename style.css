@@ -71,3 +71,35 @@ button:disabled {
 .chainDay.done {
     background: limegreen;
 }
+
+/* Dashboard container – centers content and limits width */
+.manageContainer {
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* Manage goals heading alignment */
+#manageTitle {
+    text-align: left;
+    margin-bottom: 14px;
+}
+
+/* Removes default list formatting */
+#goalList {
+    list-style: none;
+    padding: 0;
+    margin-top: 16px;
+}
+
+/* Ensures cards use full container width */
+.goalCard,
+#goalList li {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+
+
+
