@@ -53,20 +53,31 @@ function addGoal() {
     }
 
     // Initialize goal object
-    data.goals.push({
+    const goal = {
         id: Date.now(),
         name,
         color,
         startDate,
         history: {},
         bestStreak: 0
-    });
+    };
 
-    saveData();
+    // ---- ⭐ HISTORY BOOTSTRAP (IMPORTANT FIX) ----
     
-    renderGoals();
-    renderManage();
-}
+    // Automatically mark past days from startDate to yesterday as active
+    let start = new Date(startDate + "T00:00:00");
+    let yesterday = new Date(getToday() + "T00:00:00");
+    yesterday.setDate(yesterday.getDate() - 1);
+    
+    let iter = new Date(start);
+    
+    while (iter <= yesterday) {
+        const dateStr = iter.toISOString().split('T')[0];
+        goal.history[dateStr] = true;
+        iter.setDate(iter.getDate() + 1);
+    }
+    
+    data.goals.push(goal);
 
 
 // ---------- Goal Deletion ----------
@@ -298,6 +309,7 @@ function renderManage() {
 // Run UI rendering when page loads
 renderGoals();
 renderManage();
+
 
 
 
