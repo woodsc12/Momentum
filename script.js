@@ -39,20 +39,23 @@ function saveData() {
 
 // Add a new goal with validation
 function addGoal() {
-    const name = document.getElementById("goalName").value;
+    event?.preventDefault(); // Stops form refresh
+
+    const name = document.getElementById("goalName").value.trim();
     const color = document.getElementById("goalColor").value;
     const startDate = document.getElementById("goalStartDate").value;
 
-    if (!name || !startDate) return;
+    if (!name || !startDate) {
+        alert("Please enter goal name and start date.");
+        return;
+    }
 
-    // Prevent future start dates
     const todayStr = getToday();
     if (startDate > todayStr) {
         alert("Start date cannot be in the future.");
         return;
     }
 
-    // Initialize goal object
     const goal = {
         id: Date.now(),
         name,
@@ -62,27 +65,26 @@ function addGoal() {
         bestStreak: 0
     };
 
-    // ---- ⭐ HISTORY BOOTSTRAP (IMPORTANT FIX) ----
-    
-    // Automatically mark past days from startDate to yesterday as active
     let start = new Date(startDate + "T00:00:00");
     let yesterday = new Date(getToday() + "T00:00:00");
     yesterday.setDate(yesterday.getDate() - 1);
-    
+
     let iter = new Date(start);
-    
+
     while (iter <= yesterday) {
         const dateStr = iter.toISOString().split('T')[0];
         goal.history[dateStr] = true;
         iter.setDate(iter.getDate() + 1);
     }
-    
+
     data.goals.push(goal);
 
     saveData();
-
     renderGoals();
     renderManage();
+
+    // Clear inputs after adding (nice UX touch)
+    document.getElementById("goalName").value = "";
 }
 
 // ---------- Goal Deletion ----------
@@ -314,6 +316,7 @@ function renderManage() {
 // Run UI rendering when page loads
 renderGoals();
 renderManage();
+
 
 
 
